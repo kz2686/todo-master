@@ -5,44 +5,64 @@ struct TodayView: View {
     @State private var showingAdd = false
 
     private var dateTitle: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d"
-        return formatter.string(from: Date())
+        let f = DateFormatter()
+        f.dateFormat = "EEEE, MMM d"
+        return f.string(from: Date())
     }
 
     var body: some View {
-        NavigationView {
-            Group {
-                if store.todayTodos.isEmpty {
-                    emptyState
-                } else {
-                    List {
-                        ForEach(store.todayTodos) { todo in
-                            TodoRowView(todo: todo)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        store.delete(todo)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
+        ZStack {
+            GlassBackground()
+
+            NavigationStack {
+                todoList
+                    .navigationTitle(dateTitle)
+                    .toolbarBackground(.hidden, for: .navigationBar)
+                    .toolbarColorScheme(.dark, for: .navigationBar)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            addButton
                         }
                     }
-                    .listStyle(.insetGrouped)
+            }
+        }
+        .sheet(isPresented: $showingAdd) {
+            AddEditTodoView()
+        }
+    }
+
+    @ViewBuilder
+    private var todoList: some View {
+        if store.todayTodos.isEmpty {
+            emptyState
+        } else {
+            List {
+                ForEach(store.todayTodos) { todo in
+                    TodoRowView(todo: todo)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) { store.delete(todo) } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
             }
-            .navigationTitle(dateTitle)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAdd = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingAdd) {
-                AddEditTodoView()
+            .scrollContentBackground(.hidden)
+            .listStyle(.plain)
+        }
+    }
+
+    private var addButton: some View {
+        Button { showingAdd = true } label: {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient.pinkPurple)
+                    .frame(width: 32, height: 32)
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
             }
         }
     }
@@ -51,15 +71,16 @@ struct TodayView: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 64))
-                .foregroundColor(.green.opacity(0.5))
+                .foregroundStyle(LinearGradient.pinkPurple)
             Text("All clear!")
                 .font(.title2)
                 .fontWeight(.semibold)
-            Text("Nothing due today. Tap + to add a todo.")
+                .foregroundColor(.white)
+            Text("Nothing due today. Tap + to add something.")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.5))
                 .multilineTextAlignment(.center)
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

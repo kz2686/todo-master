@@ -5,38 +5,58 @@ struct AllTodosView: View {
     @State private var showingAdd = false
 
     var body: some View {
-        NavigationView {
-            Group {
-                if store.allIncompleteTodos.isEmpty {
-                    emptyState
-                } else {
-                    List {
-                        ForEach(store.allIncompleteTodos) { todo in
-                            TodoRowView(todo: todo)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        store.delete(todo)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
+        ZStack {
+            GlassBackground()
+
+            NavigationStack {
+                todoList
+                    .navigationTitle("All Todos")
+                    .toolbarBackground(.hidden, for: .navigationBar)
+                    .toolbarColorScheme(.dark, for: .navigationBar)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            addButton
                         }
                     }
-                    .listStyle(.insetGrouped)
+            }
+        }
+        .sheet(isPresented: $showingAdd) {
+            AddEditTodoView()
+        }
+    }
+
+    @ViewBuilder
+    private var todoList: some View {
+        if store.allIncompleteTodos.isEmpty {
+            emptyState
+        } else {
+            List {
+                ForEach(store.allIncompleteTodos) { todo in
+                    TodoRowView(todo: todo)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) { store.delete(todo) } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
             }
-            .navigationTitle("All Todos")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAdd = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingAdd) {
-                AddEditTodoView()
+            .scrollContentBackground(.hidden)
+            .listStyle(.plain)
+        }
+    }
+
+    private var addButton: some View {
+        Button { showingAdd = true } label: {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient.pinkPurple)
+                    .frame(width: 32, height: 32)
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
             }
         }
     }
@@ -45,15 +65,16 @@ struct AllTodosView: View {
         VStack(spacing: 16) {
             Image(systemName: "tray")
                 .font(.system(size: 64))
-                .foregroundColor(.secondary.opacity(0.4))
+                .foregroundColor(.white.opacity(0.25))
             Text("No todos yet")
                 .font(.title2)
                 .fontWeight(.semibold)
+                .foregroundColor(.white)
             Text("Tap + to capture something you need to do.")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.5))
                 .multilineTextAlignment(.center)
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
