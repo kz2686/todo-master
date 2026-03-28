@@ -67,12 +67,17 @@ struct HistoryView: View {
                                     HStack {
                                         Text(formatSectionDate(date))
                                             .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.white.opacity(0.7))
+                                            .fontWeight(.black)
+                                            .fontDesign(.rounded)
+                                            .foregroundColor(.white.opacity(0.75))
                                         Spacer()
                                         Text("\(todos.count) done")
-                                            .font(.caption)
-                                            .foregroundColor(.white.opacity(0.4))
+                                            .font(.caption2)
+                                            .fontWeight(.semibold)
+                                            .fontDesign(.rounded)
+                                            .tracking(0.5)
+                                            .textCase(.uppercase)
+                                            .foregroundColor(.white.opacity(0.35))
                                     }
                                     .padding(.horizontal, 4)
                                 }
@@ -100,40 +105,42 @@ struct HistoryView: View {
         HStack(alignment: .top, spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient.pinkPurple.opacity(0.5))
-                    .frame(width: 24, height: 24)
+                    .fill(LinearGradient.pinkPurple.opacity(0.45))
+                    .frame(width: 26, height: 26)
                 Image(systemName: "checkmark")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.white.opacity(0.8))
+                    .font(.system(size: 10, weight: .black))
+                    .foregroundColor(.white.opacity(0.85))
             }
+            .padding(.top, 1)
 
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: 7) {
                 Text(todo.title)
                     .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(.white.opacity(0.7))
-                    .strikethrough(true, color: .white.opacity(0.35))
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
+                    .foregroundColor(.white.opacity(0.5))
+                    .strikethrough(true, color: .white.opacity(0.28))
 
-                HStack(spacing: 10) {
-                    Label(todo.category.rawValue, systemImage: todo.category.icon)
-                        .font(.caption)
-                        .foregroundColor(todo.category.glassColor.opacity(0.7))
+                HStack(spacing: 8) {
+                    MetaBadge(
+                        text: todo.category.rawValue,
+                        icon: todo.category.icon,
+                        color: todo.category.glassColor.opacity(0.7)
+                    )
 
                     if todo.priority != .none {
-                        HStack(spacing: 4) {
-                            Circle()
-                                .fill(todo.priority.glassColor)
-                                .frame(width: 5, height: 5)
-                            Text(todo.priority.displayName)
-                                .font(.caption)
-                        }
-                        .foregroundColor(.white.opacity(0.4))
+                        MetaBadge(
+                            text: todo.priority.displayName,
+                            color: todo.priority.glassColor.opacity(0.7)
+                        )
                     }
 
                     if let completedAt = todo.completedAt {
-                        Text(completedAt, style: .time)
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.3))
+                        MetaBadge(
+                            text: completedAt.formatted(date: .omitted, time: .shortened),
+                            icon: "clock",
+                            color: .white.opacity(0.28)
+                        )
                     }
                 }
             }
@@ -141,15 +148,18 @@ struct HistoryView: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.vertical, 14)
         .glassCard(cornerRadius: 14)
     }
 
     private func categoryChip(_ label: String, icon: String, color: Color, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(label, systemImage: icon)
-                .font(.caption)
-                .fontWeight(selected ? .semibold : .regular)
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+                .tracking(0.5)
+                .textCase(.uppercase)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(selected ? color.opacity(0.2) : Color.white.opacity(0.06))
@@ -161,17 +171,19 @@ struct HistoryView: View {
     }
 
     private var emptyStateView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 60))
+                .font(.system(size: 56, weight: .bold))
                 .foregroundStyle(LinearGradient.pinkPurple)
             Text("No completed todos")
                 .font(.title2)
-                .fontWeight(.semibold)
+                .fontWeight(.black)
+                .fontDesign(.rounded)
                 .foregroundColor(.white)
             Text("Completed todos from the last 7 days will appear here.")
                 .font(.subheadline)
-                .foregroundColor(.white.opacity(0.5))
+                .fontDesign(.rounded)
+                .foregroundColor(.white.opacity(0.45))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
         }

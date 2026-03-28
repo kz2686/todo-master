@@ -18,17 +18,17 @@ struct TodoRowView: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.vertical, 16)
         .glassCard()
     }
 
-    // MARK: - Sub-views
+    // MARK: - Check button
 
     private var checkButton: some View {
         Button(action: onToggle) {
             ZStack {
                 Circle()
-                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 1.5)
+                    .strokeBorder(Color.white.opacity(0.22), lineWidth: 1.5)
                     .frame(width: 26, height: 26)
 
                 if todo.isCompleted {
@@ -36,63 +36,59 @@ struct TodoRowView: View {
                         .fill(LinearGradient.pinkPurple)
                         .frame(width: 26, height: 26)
                     Image(systemName: "checkmark")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .black))
                         .foregroundColor(.white)
                 }
             }
         }
         .buttonStyle(.plain)
-        .padding(.top, 1)
+        .padding(.top, 2)
     }
 
-    private var details: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(todo.title)
-                .font(.body)
-                .fontWeight(.medium)
-                .foregroundColor(todo.isCompleted ? .white.opacity(0.35) : .white)
-                .strikethrough(todo.isCompleted, color: .white.opacity(0.35))
+    // MARK: - Content
 
+    private var details: some View {
+        VStack(alignment: .leading, spacing: 8) {
+
+            // Title — bold, rounded, primary white
+            Text(todo.title)
+                .todoTitle(completed: todo.isCompleted)
+                .strikethrough(todo.isCompleted, color: .white.opacity(0.28))
+
+            // Notes preview — softer, secondary
             if !todo.notes.isEmpty {
                 Text(todo.notes)
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.4))
+                    .secondaryLabel()
                     .lineLimit(2)
             }
 
-            HStack(spacing: 10) {
-                // Category
-                Label(todo.category.rawValue, systemImage: todo.category.icon)
-                    .font(.caption)
-                    .foregroundColor(todo.category.glassColor)
+            // Metadata row — ALL CAPS micro-labels
+            HStack(spacing: 8) {
+                MetaBadge(
+                    text: todo.category.rawValue,
+                    icon: todo.category.icon,
+                    color: todo.category.glassColor
+                )
 
-                // Priority
                 if todo.priority != .none {
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(todo.priority.glassColor)
-                            .frame(width: 6, height: 6)
-                        Text(todo.priority.displayName)
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.5))
-                    }
+                    MetaBadge(
+                        text: todo.priority.displayName,
+                        color: todo.priority.glassColor
+                    )
                 }
 
-                // Due date
                 if let dueDate = todo.dueDate {
-                    HStack(spacing: 3) {
-                        Image(systemName: "calendar")
-                        Text(formatDate(dueDate))
-                    }
-                    .font(.caption)
-                    .foregroundColor(isOverdue(dueDate) && !todo.isCompleted ? .accentPink : .white.opacity(0.45))
+                    MetaBadge(
+                        text: formatDate(dueDate),
+                        icon: "calendar",
+                        color: isOverdue(dueDate) && !todo.isCompleted ? .accentPink : .white.opacity(0.35)
+                    )
                 }
 
-                // Reminder indicator
                 if todo.reminderDate != nil {
                     Image(systemName: "bell.fill")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.4))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.32))
                 }
             }
         }

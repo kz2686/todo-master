@@ -142,26 +142,30 @@ struct ContentView: View {
         Button(action: action) {
             Text(label)
                 .font(.subheadline)
-                .fontWeight(selected ? .semibold : .regular)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 9)
                 .background(selected ? LinearGradient.pinkPurple : LinearGradient(colors: [Color.white.opacity(0.08)], startPoint: .leading, endPoint: .trailing))
-                .foregroundColor(selected ? .white : .white.opacity(0.55))
+                .foregroundColor(selected ? .white : .white.opacity(0.45))
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(Color.white.opacity(selected ? 0 : 0.15), lineWidth: 0.5))
+                .overlay(Capsule().stroke(Color.white.opacity(selected ? 0 : 0.12), lineWidth: 0.5))
         }
         .buttonStyle(.plain)
     }
 
-    private func categoryChip(_ label: String, icon: String, color: Color = .white.opacity(0.5), selected: Bool, action: @escaping () -> Void) -> some View {
+    private func categoryChip(_ label: String, icon: String, color: Color = .white.opacity(0.4), selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(label, systemImage: icon)
-                .font(.caption)
-                .fontWeight(selected ? .semibold : .regular)
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+                .tracking(0.5)
+                .textCase(.uppercase)
                 .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.vertical, 7)
                 .background(selected ? color.opacity(0.2) : Color.white.opacity(0.06))
-                .foregroundColor(selected ? color : .white.opacity(0.45))
+                .foregroundColor(selected ? color : .white.opacity(0.38))
                 .clipShape(Capsule())
                 .overlay(Capsule().stroke(selected ? color.opacity(0.4) : Color.white.opacity(0.1), lineWidth: 0.5))
         }
@@ -193,17 +197,19 @@ struct ContentView: View {
     }
 
     private var emptyStateView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             Image(systemName: selectedFilter == .today ? "checkmark.circle.fill" : "tray")
-                .font(.system(size: 60))
+                .font(.system(size: 56, weight: .bold))
                 .foregroundStyle(LinearGradient.pinkPurple)
             Text(selectedFilter == .today ? "All clear!" : "No todos")
                 .font(.title2)
-                .fontWeight(.semibold)
+                .fontWeight(.black)
+                .fontDesign(.rounded)
                 .foregroundColor(.white)
             Text("Tap + to add something.")
                 .font(.subheadline)
-                .foregroundColor(.white.opacity(0.5))
+                .fontDesign(.rounded)
+                .foregroundColor(.white.opacity(0.45))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

@@ -83,11 +83,12 @@ struct GlassSection<Content: View>: View {
         VStack(alignment: .leading, spacing: 8) {
             if let title {
                 Text(title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white.opacity(0.45))
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
+                    .foregroundColor(.white.opacity(0.38))
                     .textCase(.uppercase)
-                    .tracking(1.2)
+                    .tracking(1.6)
                     .padding(.leading, 4)
             }
             content
@@ -95,6 +96,64 @@ struct GlassSection<Content: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .glassCard()
         }
+    }
+}
+
+// MARK: - Typography modifiers
+
+extension View {
+    /// Bold rounded title — primary content like todo titles
+    func todoTitle(completed: Bool = false) -> some View {
+        self
+            .font(.body)
+            .fontWeight(.bold)
+            .fontDesign(.rounded)
+            .foregroundColor(completed ? .white.opacity(0.28) : .white)
+    }
+
+    /// Secondary body text — notes previews, descriptions
+    func secondaryLabel() -> some View {
+        self
+            .font(.subheadline)
+            .fontDesign(.rounded)
+            .foregroundColor(.white.opacity(0.55))
+    }
+
+    /// ALL CAPS micro-label — category, priority, dates, metadata
+    func metaLabel(color: Color = .white.opacity(0.38)) -> some View {
+        self
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .fontDesign(.rounded)
+            .foregroundColor(color)
+            .textCase(.uppercase)
+            .tracking(0.7)
+    }
+}
+
+// MARK: - Reusable micro-badge
+
+struct MetaBadge: View {
+    let text: String
+    var icon: String? = nil
+    var color: Color = .white.opacity(0.38)
+
+    var body: some View {
+        HStack(spacing: 3) {
+            if let icon { Image(systemName: icon).font(.system(size: 9, weight: .semibold)) }
+            Text(text)
+        }
+        .font(.caption2)
+        .fontWeight(.semibold)
+        .fontDesign(.rounded)
+        .tracking(0.7)
+        .textCase(.uppercase)
+        .padding(.horizontal, 7)
+        .padding(.vertical, 4)
+        .background(color.opacity(0.15))
+        .foregroundColor(color)
+        .clipShape(Capsule())
+        .overlay(Capsule().stroke(color.opacity(0.3), lineWidth: 0.5))
     }
 }
 
