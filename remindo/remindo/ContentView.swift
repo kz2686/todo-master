@@ -53,15 +53,17 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            GlassBackground()
+        NavigationStack {
+            ZStack {
+                GlassBackground()
 
-            NavigationStack {
                 VStack(spacing: 0) {
                     filterBar
                     todoList
                 }
-                .navigationTitle("Remindo")
+            }
+            .navigationTitle("Remindo")
+            .preferredColorScheme(.dark)
                 .navigationBarTitleDisplayMode(.large)
                 .toolbarBackground(.hidden, for: .navigationBar)
                 .toolbarColorScheme(.dark, for: .navigationBar)
@@ -103,7 +105,6 @@ struct ContentView: View {
                 .sheet(isPresented: $showingHistory) { HistoryView() }
                 .task { await NotificationManager.shared.requestAuthorization() }
             }
-        }
     }
 
     // MARK: - Filter bar
